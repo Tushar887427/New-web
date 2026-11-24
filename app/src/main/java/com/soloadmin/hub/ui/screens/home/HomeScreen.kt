@@ -678,19 +678,20 @@ private fun FinanceSnapshotCard(state: HomeUiState, onOpenFinance: () -> Unit) {
         amount = formatInr(netThisMonth),
         modifier = Modifier.clickable(onClick = onOpenFinance),
         caption = "Received ${formatInr(state.monthReceived)} · spent ${formatInr(state.monthPersonal)}",
-        accent = if (netThisMonth.isNegative) colors.tileClay else Color(0xFF9FE3C4)
-    ) {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            GlassStat("Pending bills", formatInr(state.monthPending), Modifier.weight(1f), Color(0xFFF3C98B))
-            GlassStat("Duty days", state.recentDuties.toString(), Modifier.weight(1f), Color(0xFF9FE3C4))
-            GlassStat(
-                "Duty hours",
-                AttendanceCalculator.formatDuration(state.dutyHoursThisMonth),
-                Modifier.weight(if (state.dutyHoursThisMonth > 0) 1.2f else 1f),
-                Color(0xFFCFE9DC)
-            )
+        accent = if (netThisMonth.isNegative) colors.tileClay else Color(0xFF9FE3C4),
+        footer = {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                GlassStat("Pending bills", formatInr(state.monthPending), Modifier.weight(1f), Color(0xFFF3C98B))
+                GlassStat("Duty days", state.recentDuties.toString(), Modifier.weight(1f), Color(0xFF9FE3C4))
+                GlassStat(
+                    "Duty hours",
+                    AttendanceCalculator.formatDuration(state.dutyHoursThisMonth),
+                    Modifier.weight(if (state.dutyHoursThisMonth > 0) 1.2f else 1f),
+                    Color(0xFFCFE9DC)
+                )
+            }
         }
-    }
+    )
 }
 
 @Composable

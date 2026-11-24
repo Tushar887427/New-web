@@ -145,21 +145,24 @@ class AttendanceViewModel(
                 return@launch
             }
             val type = LeaveTypes.normalize(leaveType)
-            val records = generateSequence(start) { it.plusDays(1) }
-                .takeWhile { !it.isAfter(end) }
-                .map { date ->
-                    val key = DateKeys.of(date)
-                    val existing = attendanceRepository.get(key)
-                    AttendanceRecord(
-                        dateKey = key,
-                        status = AttendanceStatus.LEAVE,
-                        leaveType = type,
-                        inTime = null,
-                        outTime = null,
-                        note = note.trim(),
-                        officialDutyId = existing?.officialDutyId
-                    )
-                }.toList()
+            // A plain loop: each day needs a suspend lookup of the existing row, which no
+            // sequence operator can call.
+            val records = mutableListOf<AttendanceRecord>()
+            var date = start
+            while (!date.isAfter(end)) {
+                val key = DateKeys.of(date)
+                val existing = attendanceRepository.get(key)
+                records += AttendanceRecord(
+                    dateKey = key,
+                    status = AttendanceStatus.LEAVE,
+                    leaveType = type,
+                    inTime = null,
+                    outTime = null,
+                    note = note.trim(),
+                    officialDutyId = existing?.officialDutyId
+                )
+                date = date.plusDays(1)
+            }
             attendanceRepository.upsertAll(records)
             events.send("$type saved (${records.size} day${if (records.size == 1) "" else "s"})")
         }

@@ -7,8 +7,8 @@ import com.soloadmin.hub.data.repository.AttendanceRepository
 import com.soloadmin.hub.data.repository.ColleagueRepository
 import com.soloadmin.hub.data.repository.ProfileRepository
 import com.soloadmin.hub.domain.logic.DateKeys
-import AttendanceRecord
-import ColleagueRecord
+import com.soloadmin.hub.domain.model.AttendanceRecord
+import com.soloadmin.hub.domain.model.ColleagueRecord
 import com.soloadmin.hub.domain.model.InfoField
 import com.soloadmin.hub.domain.model.ProfileRecord
 import kotlinx.coroutines.channels.Channel

@@ -10,6 +10,7 @@ import com.soloadmin.hub.data.database.KeyDateEntity
 import com.soloadmin.hub.data.database.OfficialDutyEntity
 import com.soloadmin.hub.data.database.ProfileEntity
 import com.soloadmin.hub.data.database.ProfileInfoEntity
+import androidx.room.withTransaction
 import com.soloadmin.hub.data.database.SoloDatabase
 import java.time.LocalDate
 import java.time.YearMonth
@@ -23,7 +24,7 @@ import java.time.YearMonth
  */
 object SampleData {
 
-    fun seed(db: SoloDatabase, today: LocalDate) {
+    suspend fun seed(db: SoloDatabase, today: LocalDate) {
         val month = YearMonth.from(today)
         fun day(dayOfMonth: Int): String =
             LocalDate.of(month.year, month.monthValue, dayOfMonth.coerceIn(1, 28)).toString()
@@ -99,7 +100,7 @@ object SampleData {
             ProfileInfoEntity(1, 3, "Mobile", "+91 98000 00000")
         )
 
-        db.runInTransaction {
+        db.withTransaction {
             db.attendanceDao().upsertAll(attendance)
             db.officialDutyDao().upsert(duty)
             db.expenseDao().upsertAll(expenses)

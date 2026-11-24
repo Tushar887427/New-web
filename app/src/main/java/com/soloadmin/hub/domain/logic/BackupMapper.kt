@@ -239,6 +239,7 @@ object BackupMapper {
     }
 
     data class Mapped(
+        val attendance: List<AttendanceRecord>,
         val duties: List<OfficialDutyRecord>,
         val expenses: List<ExpenseRecord>,
         val finances: List<FinanceRecord>,
@@ -368,7 +369,7 @@ object BackupMapper {
             )
         }.distinctBy { it.id }
 
-        return Mapped(duties, expenses, finances, keyDates, tasks, colleagues)
+        return Mapped(attendance, duties, expenses, finances, keyDates, tasks, colleagues)
     }
 
     fun mapProfile(decoded: DecodedBackup): ProfileRecord? {

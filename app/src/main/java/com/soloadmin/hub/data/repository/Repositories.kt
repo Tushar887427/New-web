@@ -20,6 +20,7 @@ import com.soloadmin.hub.domain.model.KeyDateRecord
 import com.soloadmin.hub.domain.model.OfficialDutyRecord
 import com.soloadmin.hub.domain.model.ProfileRecord
 import com.soloadmin.hub.domain.model.WorkSession
+import androidx.room.withTransaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -323,7 +324,7 @@ class DataTransferRepository(
                 sessionsToWrite.none { it.dateKey == old.dateKey }
             } else emptyList()
 
-            androidx.room.withTransaction(db) {
+            db.withTransaction {
                 if (options.replaceAll) {
                     if (attendanceToWrite.isEmpty()) db.attendanceDao().deleteAll()
                     dutiesToWrite.ifEmpty { db.officialDutyDao().deleteAll() }
@@ -371,7 +372,7 @@ class DataTransferRepository(
         db.officialDutyDao().getAll().mapNotNull { it.attachmentPath?.let { path -> File(path).name } }.toSet()
 
     suspend fun wipeAll() = withContext(Dispatchers.IO) {
-        androidx.room.withTransaction(db) { db.maintenanceDao().wipeEverything() }
+        db.withTransaction { db.maintenanceDao().wipeEverything() }
         mediaStore.pruneOrphans(emptySet(), emptySet())
     }
 
@@ -391,7 +392,7 @@ class DataTransferRepository(
 
     /** Replaces the database with the bundled sample set (Settings → Reset). */
     suspend fun resetToSample(today: java.time.LocalDate) = withContext(Dispatchers.IO) {
-        androidx.room.withTransaction(db) {
+        db.withTransaction {
             db.maintenanceDao().wipeEverything()
             com.soloadmin.hub.data.seed.SampleData.seed(db, today)
         }

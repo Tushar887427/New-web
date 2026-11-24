@@ -56,6 +56,7 @@ import com.soloadmin.hub.domain.model.ColleagueRecord
 import com.soloadmin.hub.domain.model.ColleagueTheme
 import com.soloadmin.hub.domain.model.InfoField
 import com.soloadmin.hub.ui.components.CircleIconButton
+import com.soloadmin.hub.data.files.photoFile
 import com.soloadmin.hub.ui.components.EmptyState
 import com.soloadmin.hub.ui.components.FilterChip
 import com.soloadmin.hub.ui.components.PrimaryButton
