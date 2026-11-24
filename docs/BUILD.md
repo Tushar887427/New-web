@@ -97,6 +97,24 @@ buildTypes {
 `./gradlew bundleRelease` then produces `app/build/outputs/bundle/release/app-release.aab` for Play, and
 `assembleRelease` produces an installable APK.
 
+## 3b. CI build (no local toolchain)
+
+`.github/workflows/android.yml` builds and tests on every push. Use **Actions → Android CI → Run
+workflow** for an on-demand build, then download the `solo-admin-apk` artifact (it contains
+`app-debug.apk` and `SHA256SUMS.txt`). A green run means `testDebugUnitTest` and `assembleDebug`
+both passed on a clean machine — the debug APK is directly installable:
+
+```bash
+adb install -r app-debug.apk
+```
+
+Pushing a `v*` tag additionally runs the **Publish APK** job, which attaches the debug APK, the
+unsigned release APK and `SHA256SUMS.txt` to a GitHub Release.
+
+To see why a run failed, read the failing lines posted on
+[issue #1](https://github.com/Tushar887427/New-web/issues/1) — the workflow extracts the compiler
+and test errors from the build log and comments them there automatically.
+
 ## 4. Tests
 
 ```bash

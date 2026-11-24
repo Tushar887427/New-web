@@ -37,6 +37,24 @@ JDK 17 · Android SDK 35 · Android 8.0 (API 26) or newer. Gradle is included vi
 
 Full instructions, including release signing: **[docs/BUILD.md](docs/BUILD.md)**.
 
+### Build the APK with GitHub Actions
+
+Nothing needs to be installed to get an installable APK:
+
+1. Open **Actions → Android CI → Run workflow** on your branch.
+2. When the run turns green, open the run and download the **`solo-admin-apk`** artifact — it
+   contains `app-debug.apk` plus a `SHA256SUMS.txt`. Sideload it with `adb install -r app-debug.apk`.
+3. Each run also uploads **`unit-test-report`** (the JUnit XML) and a job summary with the test
+   counts, so a red build tells you which test failed without downloading anything.
+
+The workflow has three jobs: **Build & unit tests** (compiles, runs the JVM suite, assembles both
+APKs), **Lint** (informational, never blocks), and **Publish APK** (only for `v*` tags — it opens a
+GitHub Release with the debug APK, the unsigned release APK and `SHA256SUMS.txt`).
+
+If the build fails, the failing compiler/test lines are posted as a comment on
+[issue #1](https://github.com/Tushar887427/New-web/issues/1), because raw Actions logs are not
+always reachable.
+
 ## Migrating your existing data
 
 Your old records live in the browser under `localStorage['solo_gov_office_hub_v6']`. Export that JSON
