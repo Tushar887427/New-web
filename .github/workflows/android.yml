@@ -12,6 +12,7 @@ concurrency:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   # ---------------------------------------------------------------------------
@@ -73,14 +74,48 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Unit tests
-        run: ./gradlew --no-daemon testDebugUnitTest
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon testDebugUnitTest 2>&1 | tee build.log
 
       - name: Assemble debug APK
-        run: ./gradlew --no-daemon assembleDebug
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon assembleDebug 2>&1 | tee -a build.log
 
       - name: Assemble unsigned release APK
-        run: ./gradlew --no-daemon assembleRelease
         continue-on-error: true
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon assembleRelease 2>&1 | tee -a build.log
+
+      # The raw Actions log is not always reachable from every client, so the
+      # compiler/test errors are also published as an issue comment where they
+      # can be read and acted on directly.
+      - name: Publish build errors to an issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ ! -f build.log ]; then echo "No build log"; exit 0; fi
+          {
+            echo "Automated report from [run ${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) on \`${{ github.ref_name }}\` @ \`${GITHUB_SHA:0:7}\`."
+            echo
+            echo '```'
+            grep -nE "^e: |^w: .*error|error:|FAILED|FAILURE:|Caused by|> Task .*FAILED|Execution failed|What went wrong" build.log \
+              | head -120 || true
+            echo '```'
+          } > report.md
+          if [ ! -s report.md ]; then echo "nothing extracted"; exit 0; fi
+          TITLE="CI build failures"
+          NUM=$(gh issue list --state open --search "$TITLE in:title" --json number,title \
+                 --jq "[.[] | select(.title==\"$TITLE\")][0].number // empty" 2>/dev/null)
+          if [ -z "$NUM" ]; then
+            gh issue create --title "$TITLE" --body "Automated Android CI reports. Latest first." >/dev/null
+            NUM=$(gh issue list --state open --search "$TITLE in:title" --json number,title \
+                   --jq "[.[] | select(.title==\"$TITLE\")][0].number")
+          fi
+          gh issue comment "$NUM" --body-file report.md
 
       - name: Collect APKs
         if: always()
