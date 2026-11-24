@@ -2,6 +2,7 @@ package com.soloadmin.hub.ui.screens.colleagues
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -153,6 +154,8 @@ fun ColleaguesScreen(viewModel: ColleaguesViewModel, onBack: () -> Unit, onSnack
             onRemoveField = viewModel::removeInfoField,
             onPhoto = viewModel::setPhoto,
             onCover = viewModel::setCover,
+            onRemovePhoto = viewModel::clearPhoto,
+            onRemoveCover = viewModel::clearCover,
             onDismiss = { showEditor = false; viewModel.resetForm() },
             onSave = { viewModel.save(); showEditor = false }
         )
@@ -298,6 +301,8 @@ private fun ColleagueEditorSheet(
     onRemoveField: (Int) -> Unit,
     onPhoto: (Uri) -> Unit,
     onCover: (Uri) -> Unit,
+    onRemovePhoto: () -> Unit,
+    onRemoveCover: () -> Unit,
     onDismiss: () -> Unit,
     onSave: () -> Unit
 ) {
@@ -326,7 +331,11 @@ private fun ColleagueEditorSheet(
                         .size(58.dp)
                         .clip(CircleShape)
                         .background(SoloTheme.colors.subtleSurface)
-                        .clickable { photoLauncher.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                        .clickable {
+                            photoLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     if (form.photoPath != null) {
@@ -340,25 +349,44 @@ private fun ColleagueEditorSheet(
                             modifier = Modifier.size(58.dp)
                         )
                     } else {
-                        Icon(Icons.Outlined.PhotoCamera, contentDescription = "Add photo", tint = SoloTheme.colors.textTertiary, modifier = Modifier.size(22.dp))
+                        Icon(
+                            Icons.Outlined.PhotoCamera,
+                            contentDescription = "Add photo",
+                            tint = SoloTheme.colors.textTertiary,
+                            modifier = Modifier.size(22.dp)
+                        )
                     }
                 }
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
-                    TextButton(onClick = { photoLauncher.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }) {
+                    TextButton(onClick = {
+                        photoLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    }) {
                         Text(if (form.photoPath == null) "Choose photo" else "Change photo")
                     }
                     if (form.photoPath != null) {
-                        TextButton(onClick = { onUpdate { it.copy(photoPath = null) } }) {
+                        TextButton(onClick = onRemovePhoto) {
                             Text("Remove photo", color = SoloTheme.colors.danger)
                         }
                     }
                 }
             }
-            TextButton(onClick = { coverLauncher.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }) {
-                Text(if (form.coverPath == null) "Add cover image (optional)" else "Change cover image")
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                TextButton(onClick = {
+                    coverLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                }) {
+                    Text(if (form.coverPath == null) "Add cover image" else "Change cover image")
+                }
+                if (form.coverPath != null) {
+                    TextButton(onClick = onRemoveCover) {
+                        Text("Remove cover", color = SoloTheme.colors.danger)
+                    }
+                }
             }
-
             SoloTextField(
                 value = form.name,
                 onValueChange = { value -> onUpdate { it.copy(name = value.take(80)) } },

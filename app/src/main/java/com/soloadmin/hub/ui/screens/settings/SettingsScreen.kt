@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CloudUpload
 import androidx.compose.material.icons.outlined.DeleteForever
@@ -28,7 +27,6 @@ import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.UploadFile
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
@@ -68,6 +66,7 @@ import java.time.YearMonth
  * Admin settings: appearance, behaviour, reminders, exports, migration and the danger zone.
  * Every control here writes real preferences or real files — there are no decorative rows.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,

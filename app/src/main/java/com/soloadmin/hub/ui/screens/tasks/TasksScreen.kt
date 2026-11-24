@@ -51,11 +51,13 @@ import com.soloadmin.hub.ui.components.SoloCard
 import com.soloadmin.hub.ui.components.SoloScreen
 import com.soloadmin.hub.ui.components.SoloTextField
 import com.soloadmin.hub.ui.theme.SoloTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
 
 /**
  * Daily tasks: an always-visible quick add field, pending/completed filters, tap-to-complete rows
  * with a satisfying check animation, and inline rename/delete.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TasksScreen(viewModel: TasksViewModel, onBack: () -> Unit) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()

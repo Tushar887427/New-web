@@ -7,6 +7,8 @@ import com.soloadmin.hub.data.repository.AttendanceRepository
 import com.soloadmin.hub.data.repository.ColleagueRepository
 import com.soloadmin.hub.data.repository.ProfileRepository
 import com.soloadmin.hub.domain.logic.DateKeys
+import AttendanceRecord
+import ColleagueRecord
 import com.soloadmin.hub.domain.model.InfoField
 import com.soloadmin.hub.domain.model.ProfileRecord
 import kotlinx.coroutines.channels.Channel
@@ -57,8 +59,8 @@ class ProfileViewModel(
         form
     ) { values ->
         val profile = values[0] as ProfileRecord
-        val attendance = values[1] as List<com.soloadmin.hub.domain.model.AttendanceRecord>
-        val colleagues = values[2] as List<com.soloadmin.hub.domain.model.ColleagueRecord>
+        val attendance = values[1] as List<AttendanceRecord>
+        val colleagues = values[2] as List<ColleagueRecord>
         val formState = values[3] as ProfileFormState
         ProfileUiState(
             loading = false,

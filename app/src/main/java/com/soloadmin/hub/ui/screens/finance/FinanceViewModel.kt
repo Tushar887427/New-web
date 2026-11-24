@@ -11,6 +11,7 @@ import com.soloadmin.hub.domain.logic.FinanceFigures
 import com.soloadmin.hub.domain.logic.FinancialCalculator
 import com.soloadmin.hub.domain.logic.Money
 import com.soloadmin.hub.domain.logic.formatInrCompact
+import com.soloadmin.hub.domain.model.ExpenseOwner
 import com.soloadmin.hub.domain.model.FinanceRecord
 import com.soloadmin.hub.domain.model.FinanceStatus
 import kotlinx.coroutines.channels.Channel
@@ -76,7 +77,7 @@ class FinanceViewModel(
             val prefix = "%04d-%02d".format(month.year, month.monthValue)
             val received = finances.filter { it.dateKey.startsWith(prefix) && it.status == FinanceStatus.RECEIVED }
                 .fold(Money.ZERO) { acc, item -> acc + item.amount }
-            val personal = expenses.filter { it.dateKey.startsWith(prefix) && it.owner == com.soloadmin.hub.domain.model.ExpenseOwner.PERSONAL }
+            val personal = expenses.filter { it.dateKey.startsWith(prefix) && it.owner == ExpenseOwner.PERSONAL }
                 .fold(Money.ZERO) { acc, item -> acc + item.amount }
             MonthlyTrendPoint(month, DateKeys.monthShort(month.monthValue), received, personal)
         }

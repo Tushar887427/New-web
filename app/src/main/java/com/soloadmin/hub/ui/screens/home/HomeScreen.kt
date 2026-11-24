@@ -1,14 +1,6 @@
 package com.soloadmin.hub.ui.screens.home
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,18 +10,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.CalendarMonth
@@ -41,8 +30,6 @@ import androidx.compose.material.icons.outlined.PauseCircle
 import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.TaskAlt
-import androidx.compose.material.icons.outlined.Timelapse
-import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.Verified
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -80,15 +67,13 @@ import com.soloadmin.hub.ui.components.GroupDivider
 import com.soloadmin.hub.ui.components.GroupedList
 import com.soloadmin.hub.ui.components.IconTile
 import com.soloadmin.hub.ui.components.ListRow
-import com.soloadmin.hub.ui.components.ProgressRing
 import com.soloadmin.hub.ui.components.SoloCard
 import com.soloadmin.hub.ui.components.StatusPill
 import com.soloadmin.hub.ui.components.ValueBar
 import com.soloadmin.hub.ui.navigation.Routes
+import com.soloadmin.hub.ui.screens.attendance.AttendanceViewModel
 import com.soloadmin.hub.ui.theme.SoloSpacing
 import com.soloadmin.hub.ui.theme.SoloTheme
-import kotlinx.coroutines.delay
-import java.time.LocalTime
 
 /**
  * Home dashboard.
@@ -100,7 +85,7 @@ import java.time.LocalTime
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
-    leaveViewModel: com.soloadmin.hub.ui.screens.attendance.AttendanceViewModel,
+    leaveViewModel: AttendanceViewModel,
     settings: AppSettings,
     onNavigate: (String) -> Unit,
     onSnackbar: (String) -> Unit
@@ -686,7 +671,7 @@ private fun MetricBlock(label: String, value: String, accent: Color, modifier: M
 @Composable
 private fun FinanceSnapshotCard(state: HomeUiState, onOpenFinance: () -> Unit) {
     val colors = SoloTheme.colors
-    val netThisMonth = state.monthReceived - state.monthPersonal
+    val netThisMonth = state.monthNet
     BalanceCard(
         eyebrow = "This month's balance",
         amount = formatInr(netThisMonth),

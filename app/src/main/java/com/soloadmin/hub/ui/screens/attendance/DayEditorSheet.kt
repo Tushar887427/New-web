@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DeleteOutline
@@ -36,7 +35,7 @@ import com.soloadmin.hub.ui.screens.home.SheetContent
 import com.soloadmin.hub.ui.theme.SoloTheme
 
 /** Edits a single calendar day: status, leave type, times and notes. */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun DayEditorSheet(
     dateKey: String,

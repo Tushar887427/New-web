@@ -6,6 +6,7 @@ import com.soloadmin.hub.data.files.MediaStore
 import com.soloadmin.hub.data.repository.AttendanceRepository
 import com.soloadmin.hub.data.repository.OfficialDutyRepository
 import com.soloadmin.hub.domain.logic.DateKeys
+import com.soloadmin.hub.domain.model.AttendanceStatus
 import com.soloadmin.hub.domain.model.DutyMode
 import com.soloadmin.hub.domain.model.OfficialDutyRecord
 import kotlinx.coroutines.channels.Channel
@@ -143,7 +144,7 @@ class OfficialDutyViewModel(
         if (attendance?.officialDutyId == record.id) {
             attendanceRepository.upsert(
                 attendance.copy(
-                    status = com.soloadmin.hub.domain.model.AttendanceStatus.PRESENT,
+                    status = AttendanceStatus.PRESENT,
                     officialDutyId = null,
                     note = ""
                 )

@@ -1,7 +1,8 @@
 package com.soloadmin.hub.ui.screens.home
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,15 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -28,11 +23,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.soloadmin.hub.domain.logic.AttendanceCalculator
 import com.soloadmin.hub.domain.logic.DateKeys
 import com.soloadmin.hub.domain.model.LeaveTypes
 import com.soloadmin.hub.ui.components.DateField
@@ -96,7 +91,7 @@ fun MissedPunchSheet(
                 } else {
                     Text(
                         text = buildString {
-                            append("Worked ${com.soloadmin.hub.domain.logic.AttendanceCalculator.formatDuration(end - start)}")
+                            append("Worked ${AttendanceCalculator.formatDuration(end - start)}")
                             append(if (late) " · will be marked Late" else " · will be marked Present")
                         },
                         style = MaterialTheme.typography.labelMedium,
@@ -139,7 +134,6 @@ fun QuickLeaveSheet(
     var toDate by remember { mutableStateOf(todayKey) }
     var note by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
-    var saving by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -191,12 +185,11 @@ fun QuickLeaveSheet(
             PrimaryButton(
                 text = "Save leave",
                 onClick = {
-                    saving = true
                     val startDate = DateKeys.parseOrNull(fromDate)
                     val endDate = DateKeys.parseOrNull(toDate)
                     when {
-                        startDate == null || endDate == null -> { error = "Choose valid dates"; saving = false }
-                        endDate < startDate -> { error = "End date cannot be before start date"; saving = false }
+                        startDate == null || endDate == null -> error = "Choose valid dates"
+                        endDate < startDate -> error = "End date cannot be before start date"
                         else -> {
                             vm.saveLeaveRange(leaveType, fromDate, toDate, note)
                             onSaved()
@@ -221,7 +214,7 @@ fun SheetContent(
             .padding(horizontal = 20.dp)
             .padding(top = 16.dp, bottom = 28.dp)
     ) {
-        androidx.compose.foundation.layout.Box(
+        Box(
             Modifier
                 .padding(bottom = 12.dp)
                 .size(width = 36.dp, height = 4.dp)

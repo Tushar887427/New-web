@@ -20,7 +20,6 @@ import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.ChevronLeft
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Schedule
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,8 +46,8 @@ import com.soloadmin.hub.ui.components.IconTile
 import com.soloadmin.hub.ui.components.ListRow
 import com.soloadmin.hub.ui.components.SoloCard
 import com.soloadmin.hub.ui.components.SoloScreen
-import com.soloadmin.hub.ui.components.StatusPill
-import com.soloadmin.hub.ui.theme.SoloSpacing
+import com.soloadmin.hub.ui.screens.home.MissedPunchSheet
+import com.soloadmin.hub.ui.theme.SoloColors
 import com.soloadmin.hub.ui.theme.SoloTheme
 import java.time.LocalDate
 import java.time.YearMonth
@@ -88,7 +87,15 @@ fun AttendanceScreen(
             )
         }
     ) {
-        item { MonthSwitcher(state.month, onPrevious = { viewModel.changeMonth(-1) }, onNext = { viewModel.changeMonth(1) }) }
+        item {
+            MonthSwitcher(
+                month = state.month,
+                isCurrentMonth = state.month == YearMonth.now(),
+                onPrevious = { viewModel.changeMonth(-1) },
+                onNext = { viewModel.changeMonth(1) },
+                onToday = { viewModel.goToMonth(YearMonth.now()) }
+            )
+        }
 
         item {
             CalendarCard(
@@ -155,7 +162,7 @@ fun AttendanceScreen(
     }
 
     if (showLogTime) {
-        com.soloadmin.hub.ui.screens.home.MissedPunchSheet(
+        MissedPunchSheet(
             todayKey = DateKeys.of(LocalDate.now()),
             defaultIn = state.records[DateKeys.of(LocalDate.now())]?.inTime ?: "09:30",
             defaultOut = state.records[DateKeys.of(LocalDate.now())]?.outTime ?: "17:00",
@@ -171,7 +178,13 @@ fun AttendanceScreen(
 }
 
 @Composable
-private fun MonthSwitcher(month: YearMonth, onPrevious: () -> Unit, onNext: () -> Unit) {
+private fun MonthSwitcher(
+    month: YearMonth,
+    isCurrentMonth: Boolean,
+    onPrevious: () -> Unit,
+    onNext: () -> Unit,
+    onToday: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -195,6 +208,18 @@ private fun MonthSwitcher(month: YearMonth, onPrevious: () -> Unit, onNext: () -
                 contentDescription = "Next month",
                 onClick = onNext,
                 size = 34.dp
+            )
+        }
+        if (!isCurrentMonth) {
+            Text(
+                text = "This month",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .clickable(onClick = onToday)
+                    .padding(horizontal = 10.dp, vertical = 6.dp)
             )
         }
     }
@@ -292,7 +317,7 @@ private fun DayCell(
 data class StatusPalette(val background: androidx.compose.ui.graphics.Color, val foreground: androidx.compose.ui.graphics.Color)
 
 @Composable
-fun paletteFor(status: AttendanceStatus?, isWeeklyOff: Boolean, colors: com.soloadmin.hub.ui.theme.SoloColors): StatusPalette =
+fun paletteFor(status: AttendanceStatus?, isWeeklyOff: Boolean, colors: SoloColors): StatusPalette =
     when (status) {
         AttendanceStatus.PRESENT -> StatusPalette(colors.presentSoft, colors.present)
         AttendanceStatus.LATE -> StatusPalette(colors.lateSoft, colors.late)

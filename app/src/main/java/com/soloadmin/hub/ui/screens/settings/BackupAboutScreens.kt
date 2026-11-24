@@ -2,8 +2,6 @@ package com.soloadmin.hub.ui.screens.settings
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -35,11 +33,13 @@ import com.soloadmin.hub.ui.components.NoticeTone
 import com.soloadmin.hub.ui.components.SoloCard
 import com.soloadmin.hub.ui.components.SoloScreen
 import com.soloadmin.hub.ui.theme.SoloTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
 
 /**
  * Backup & restore: one place to export a full snapshot, import either a native or a legacy
  * backup, and see what is stored. Import always previews before writing.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BackupScreen(
     viewModel: SettingsViewModel,

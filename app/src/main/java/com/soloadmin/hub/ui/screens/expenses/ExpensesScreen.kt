@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,11 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.DeleteOutline
-import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material.icons.outlined.Undo
 import androidx.compose.material.icons.outlined.Verified
@@ -45,6 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.soloadmin.hub.domain.logic.DateKeys
+import com.soloadmin.hub.domain.logic.Money
 import com.soloadmin.hub.domain.logic.formatInr
 import com.soloadmin.hub.domain.model.ExpenseCategories
 import com.soloadmin.hub.domain.model.ExpenseOwner
@@ -65,6 +63,7 @@ import com.soloadmin.hub.ui.components.StatusPill
 import com.soloadmin.hub.ui.screens.home.SheetContent
 import com.soloadmin.hub.ui.theme.SoloTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpensesScreen(viewModel: ExpensesViewModel, onSnackbar: (String) -> Unit) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -112,6 +111,8 @@ fun ExpensesScreen(viewModel: ExpensesViewModel, onSnackbar: (String) -> Unit) {
 
         if (state.all.isNotEmpty()) {
             item {
+                val slices = chartSlices(state)
+                val chartTotal = slices.fold(Money.ZERO) { acc, slice -> acc + Money((slice.value * 100).toLong()) }
                 SoloCard {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
@@ -121,7 +122,7 @@ fun ExpensesScreen(viewModel: ExpensesViewModel, onSnackbar: (String) -> Unit) {
                             modifier = Modifier.weight(1f)
                         )
                         Text(
-                            text = formatInr(state.headmasterDue + state.personalSpent),
+                            text = formatInr(chartTotal),
                             style = MaterialTheme.typography.labelMedium,
                             color = SoloTheme.colors.textTertiary
                         )
@@ -129,14 +130,14 @@ fun ExpensesScreen(viewModel: ExpensesViewModel, onSnackbar: (String) -> Unit) {
                     Spacer(Modifier.height(10.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         DonutChart(
-                            slices = chartSlices(state),
+                            slices = slices,
                             diameter = 108.dp,
                             strokeWidth = 14.dp,
-                            centerLabel = formatInr(state.personalSpent + state.headmasterDue).take(9),
+                            centerLabel = formatInr(chartTotal),
                             centerCaption = "total"
                         )
                         Spacer(Modifier.width(16.dp))
-                        ChartLegend(chartSlices(state), Modifier.weight(1f))
+                        ChartLegend(slices, Modifier.weight(1f))
                     }
                 }
             }
@@ -198,6 +199,26 @@ private fun chartSlices(state: ExpensesUiState): List<ChartSlice> {
     val palette = listOf(colors.duty, colors.warning, colors.early, colors.present, colors.leave, colors.absent)
     return state.categoryTotals.take(6).mapIndexed { index, (category, amount) ->
         ChartSlice(category, amount.paise / 100f, palette[index % palette.size])
+    }
+}
+
+@Composable
+private fun expenseStatusColor(recovered: Boolean, isHeadmaster: Boolean): androidx.compose.ui.graphics.Color {
+    val colors = SoloTheme.colors
+    return when {
+        isHeadmaster && recovered -> colors.positive
+        isHeadmaster -> colors.warning
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+}
+
+@Composable
+private fun expenseStatusBackground(recovered: Boolean, isHeadmaster: Boolean): androidx.compose.ui.graphics.Color {
+    val colors = SoloTheme.colors
+    return when {
+        isHeadmaster && recovered -> colors.positiveSoft
+        isHeadmaster -> colors.warningSoft
+        else -> colors.subtleSurface
     }
 }
 
@@ -307,11 +328,15 @@ private fun ExpenseRow(
                     if (isHeadmaster) {
                         StatusPill(
                             text = if (expense.recovered) "Recovered" else "Due",
-                            color = if (expense.recovered) colors.positive else colors.warning,
-                            background = if (expense.recovered) colors.positiveSoft else colors.warningSoft
+                            color = expenseStatusColor(expense.recovered, true),
+                            background = expenseStatusBackground(expense.recovered, true)
                         )
                     } else {
-                        StatusPill("Personal", MaterialTheme.colorScheme.onSurfaceVariant, colors.subtleSurface)
+                        StatusPill(
+                            text = "Personal",
+                            color = expenseStatusColor(expense.recovered, false),
+                            background = expenseStatusBackground(expense.recovered, false)
+                        )
                     }
                 }
                 Spacer(Modifier.height(3.dp))

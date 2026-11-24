@@ -56,14 +56,17 @@ import com.soloadmin.hub.ui.components.SoloTextField
 import com.soloadmin.hub.ui.components.ValueBar
 import com.soloadmin.hub.ui.screens.home.SheetContent
 import com.soloadmin.hub.ui.theme.SoloTheme
+import java.time.LocalDate
 
 /**
  * Key dates: documents and licences with validity windows. Each card shows remaining days, a
  * validity progress bar and the expiry tone so renewals are impossible to miss.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KeyDatesScreen(viewModel: KeyDatesViewModel, onBack: () -> Unit, onSnackbar: (String) -> Unit) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val stats = remember(state.records, state.today) { keyDateStats(state.records, state.today) }
     var showEditor by remember { mutableStateOf(false) }
     var deleting by remember { mutableStateOf<KeyDateRecord?>(null) }
 
@@ -72,7 +75,7 @@ fun KeyDatesScreen(viewModel: KeyDatesViewModel, onBack: () -> Unit, onSnackbar:
     SoloScreen(
         title = "Key dates",
         onBack = onBack,
-        subtitle = "${state.records.size} tracked · ${state.needsAttention} need attention",
+        subtitle = "${stats.total} tracked · ${stats.needsAttention} need attention",
         actions = {
             CircleIconButton(
                 icon = Icons.Outlined.Add,
@@ -88,7 +91,7 @@ fun KeyDatesScreen(viewModel: KeyDatesViewModel, onBack: () -> Unit, onSnackbar:
             InlineNotice(
                 text = "Reminders fire ${state.remindersEnabled.let { if (it) "on schedule" else "when enabled in settings" }} · " +
                     "alerts begin ${state.leadDays} days before expiry",
-                tone = if (state.needsAttention > 0) NoticeTone.WARNING else NoticeTone.INFO
+                tone = if (stats.needsAttention > 0) NoticeTone.WARNING else NoticeTone.INFO
             )
         }
 
@@ -149,8 +152,15 @@ fun KeyDatesScreen(viewModel: KeyDatesViewModel, onBack: () -> Unit, onSnackbar:
     }
 }
 
+private data class KeyDateStats(val total: Int, val needsAttention: Int)
+
+private fun keyDateStats(records: List<KeyDateRecord>, today: LocalDate): KeyDateStats = KeyDateStats(
+    total = records.size,
+    needsAttention = records.count { it.daysUntilExpiry(today) <= 60 }
+)
+
 @Composable
-private fun KeyDateCard(record: KeyDateRecord, today: java.time.LocalDate, onClick: () -> Unit, onDelete: () -> Unit) {
+private fun KeyDateCard(record: KeyDateRecord, today: LocalDate, onClick: () -> Unit, onDelete: () -> Unit) {
     val colors = SoloTheme.colors
     val expiry = record.expiryState(today)
     val tone = when (expiry) {

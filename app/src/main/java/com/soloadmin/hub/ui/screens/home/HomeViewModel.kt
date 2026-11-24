@@ -13,12 +13,15 @@ import com.soloadmin.hub.data.repository.TaskRepository
 import com.soloadmin.hub.data.repository.WorkSessionRepository
 import com.soloadmin.hub.domain.logic.AttendanceCalculator
 import com.soloadmin.hub.domain.logic.AttendanceCounters
+import com.soloadmin.hub.domain.logic.DashboardMath
 import com.soloadmin.hub.domain.logic.DateKeys
 import com.soloadmin.hub.domain.logic.ExpenseFigures
 import com.soloadmin.hub.domain.logic.FinanceFigures
 import com.soloadmin.hub.domain.logic.FinancialCalculator
 import com.soloadmin.hub.domain.logic.Money
 import com.soloadmin.hub.domain.model.AttendanceRecord
+import DailyTaskRecord
+import OfficialDutyRecord
 import com.soloadmin.hub.domain.model.AttendanceStatus
 import com.soloadmin.hub.domain.model.ExpenseRecord
 import com.soloadmin.hub.domain.model.FinanceRecord
@@ -60,7 +63,9 @@ data class HomeUiState(
     val hasKeyDateAlert: Boolean get() = expiringKeyDates.isNotEmpty()
     val weeklyOffLabel: String get() = profile.weeklyOffLabel
     val isWeeklyOffToday: Boolean
-        get() = DateKeys.weekdayIndexSundayFirst(today) == profile.weeklyOffDay
+        get() = DashboardMath.isWeeklyOff(today, profile.weeklyOffDay)
+
+    val monthNet: Money get() = DashboardMath.monthNet(monthReceived, monthPersonal)
 }
 
 /** Toast/snackbar events are one-shot, so they travel through a channel rather than state. */
@@ -111,8 +116,8 @@ class HomeViewModel(
             val finances = values[5] as List<FinanceRecord>
             @Suppress("UNCHECKED_CAST")
             val keyDates = values[6] as List<KeyDateRecord>
-            val taskList = values[7] as List<com.soloadmin.hub.domain.model.DailyTaskRecord>
-            val duties = values[8] as List<com.soloadmin.hub.domain.model.OfficialDutyRecord>
+            val taskList = values[7] as List<DailyTaskRecord>
+            val duties = values[8] as List<OfficialDutyRecord>
 
             val localDate = LocalDate.parse(key)
             val counters = AttendanceCalculator.counters(
@@ -133,7 +138,7 @@ class HomeViewModel(
                 counters = counters,
                 headmasterDue = FinancialCalculator.headmasterDue(expenseFigures),
                 pendingTasks = taskList.count { !it.done },
-                expiringKeyDates = keyDates.filter { it.daysUntilExpiry(localDate) <= 60 }
+                expiringKeyDates = keyDates.filter { DashboardMath.needsAttention(it.daysUntilExpiry(localDate)) }
                     .sortedBy { it.validUntil },
                 monthReceived = FinancialCalculator.totalReceived(
                     monthFinances.map { FinanceFigures(it.amount, it.status.storageKey == "received", it.dateKey) }

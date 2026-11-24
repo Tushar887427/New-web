@@ -120,7 +120,7 @@ fun SoloTextField(
 }
 
 /** Date picker field: shows the pretty date and opens the M3 date picker. */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun DateField(
     label: String,
@@ -195,7 +195,7 @@ fun DateField(
 }
 
 /** Time picker field presenting a 24h value with an AM/PM label. */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun TimeField(
     label: String,

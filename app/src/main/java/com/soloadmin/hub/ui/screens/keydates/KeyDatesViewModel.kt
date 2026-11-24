@@ -57,13 +57,15 @@ data class KeyDatesUiState(
             val days = record.daysUntilExpiry(today)
             when (filter) {
                 KeyDateFilter.ALL -> true
-                KeyDateFilter.SOON -> days in 0..60
+                KeyDateFilter.SOON -> days in 0..com.soloadmin.hub.domain.logic.DashboardMath.ATTENTION_WINDOW_DAYS
                 KeyDateFilter.EXPIRED -> days < 0
             }
         }.sortedBy { it.validUntil }
 
     val needsAttention: Int
         get() = records.count { it.daysUntilExpiry(today) <= 60 }
+
+    val totalTracked: Int get() = records.size
 }
 
 class KeyDatesViewModel(

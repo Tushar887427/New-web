@@ -38,6 +38,8 @@ import com.soloadmin.hub.domain.logic.formatInr
 import com.soloadmin.hub.domain.model.AttendanceRecord
 import com.soloadmin.hub.domain.model.AttendanceStatus
 import com.soloadmin.hub.domain.model.ExpenseOwner
+import com.soloadmin.hub.domain.model.ExpenseRecord
+import com.soloadmin.hub.domain.model.OfficialDutyRecord
 import com.soloadmin.hub.domain.model.OfficialDutyRecord
 import com.soloadmin.hub.ui.components.BalanceCard
 import com.soloadmin.hub.ui.components.EmptyState
@@ -51,7 +53,6 @@ import com.soloadmin.hub.ui.components.SoloScreen
 import com.soloadmin.hub.ui.components.StatusPill
 import com.soloadmin.hub.ui.navigation.Routes
 import com.soloadmin.hub.ui.theme.SoloTheme
-import kotlinx.coroutines.flow.combine
 import java.time.LocalDate
 
 /**
@@ -238,7 +239,7 @@ private data class TimelineEntry(
 private fun buildTimeline(
     duties: List<OfficialDutyRecord>,
     attendance: List<AttendanceRecord>,
-    expenses: List<com.soloadmin.hub.domain.model.ExpenseRecord>
+    expenses: List<ExpenseRecord>
 ): List<TimelineEntry> {
     val colors = SoloTheme.colors
     val entries = mutableListOf<TimelineEntry>()

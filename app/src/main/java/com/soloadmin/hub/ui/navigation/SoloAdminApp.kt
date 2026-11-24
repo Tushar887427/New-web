@@ -33,26 +33,28 @@ import com.soloadmin.hub.data.preferences.StartScreen
 import com.soloadmin.hub.di.AppContainer
 import com.soloadmin.hub.ui.SoloViewModelFactory
 import com.soloadmin.hub.ui.components.LocalSnackbar
-import com.soloadmin.hub.ui.screens.attendance.AttendanceScreen
-import com.soloadmin.hub.ui.screens.colleagues.ColleaguesScreen
-import com.soloadmin.hub.ui.screens.expenses.ExpensesScreen
-import com.soloadmin.hub.ui.screens.finance.FinanceScreen
-import com.soloadmin.hub.ui.screens.home.HomeScreen
-import com.soloadmin.hub.ui.screens.keydates.KeyDatesScreen
+import AttendanceScreen
+import ColleaguesScreen
+import ExpensesScreen
+import FinanceScreen
+import HomeScreen
+import KeyDatesScreen
 import com.soloadmin.hub.ui.screens.ledger.LedgerScreen
-import com.soloadmin.hub.ui.screens.officialduty.OfficialDutyScreen
-import com.soloadmin.hub.ui.screens.profile.ProfileScreen
-import com.soloadmin.hub.ui.screens.settings.AboutScreen
-import com.soloadmin.hub.ui.screens.settings.BackupScreen
-import com.soloadmin.hub.ui.screens.settings.SettingsScreen
-import com.soloadmin.hub.ui.screens.tasks.TasksScreen
+import OfficialDutyScreen
+import ProfileScreen
+import AboutScreen
+import BackupScreen
+import SettingsScreen
+import TasksScreen
 import kotlinx.coroutines.launch
+import androidx.compose.material3.ExperimentalMaterial3Api
 
 /**
  * Root of the app: a five-tab bottom bar (Home, Ledger, Expenses, Finance, Settings) over a
  * Navigation-Compose graph. Detail screens are pushed but keep the bar, because every one of them
  * is a task the user returns from quickly.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SoloAdminApp(
     settings: AppSettings,
@@ -123,8 +125,8 @@ fun SoloAdminApp(
                     popExitTransition = { fadeOut(tween(120)) }
                 ) {
                     composable(Routes.HOME) {
-                        val vm: com.soloadmin.hub.ui.screens.home.HomeViewModel = viewModel(factory = factory)
-                        val leaveVm: com.soloadmin.hub.ui.screens.attendance.AttendanceViewModel = viewModel(factory = factory)
+                        val vm: HomeViewModel = viewModel(factory = factory)
+                        val leaveVm: AttendanceViewModel = viewModel(factory = factory)
                         HomeScreen(
                             viewModel = vm,
                             leaveViewModel = leaveVm,
@@ -141,15 +143,15 @@ fun SoloAdminApp(
                         )
                     }
                     composable(Routes.EXPENSES) {
-                        val vm: com.soloadmin.hub.ui.screens.expenses.ExpensesViewModel = viewModel(factory = factory)
+                        val vm: ExpensesViewModel = viewModel(factory = factory)
                         ExpensesScreen(vm, onSnackbar = showSnackbar)
                     }
                     composable(Routes.FINANCE) {
-                        val vm: com.soloadmin.hub.ui.screens.finance.FinanceViewModel = viewModel(factory = factory)
+                        val vm: FinanceViewModel = viewModel(factory = factory)
                         FinanceScreen(vm, onSnackbar = showSnackbar, onOpenReports = { navController.navigate(Routes.SETTINGS) })
                     }
                     composable(Routes.SETTINGS) {
-                        val vm: com.soloadmin.hub.ui.screens.settings.SettingsViewModel = viewModel(factory = factory)
+                        val vm: SettingsViewModel = viewModel(factory = factory)
                         SettingsScreen(
                             viewModel = vm,
                             onNavigate = { navController.navigate(it) },
@@ -158,7 +160,7 @@ fun SoloAdminApp(
                         )
                     }
                     composable(Routes.ATTENDANCE) {
-                        val vm: com.soloadmin.hub.ui.screens.attendance.AttendanceViewModel = viewModel(factory = factory)
+                        val vm: AttendanceViewModel = viewModel(factory = factory)
                         AttendanceScreen(
                             viewModel = vm,
                             onBack = { navController.popBackStack() },
@@ -167,23 +169,23 @@ fun SoloAdminApp(
                         )
                     }
                     composable(Routes.OFFICIAL_DUTY) {
-                        val vm: com.soloadmin.hub.ui.screens.officialduty.OfficialDutyViewModel = viewModel(factory = factory)
+                        val vm: OfficialDutyViewModel = viewModel(factory = factory)
                         OfficialDutyScreen(vm, onBack = { navController.popBackStack() }, onSnackbar = showSnackbar)
                     }
                     composable(Routes.TASKS) {
-                        val vm: com.soloadmin.hub.ui.screens.tasks.TasksViewModel = viewModel(factory = factory)
+                        val vm: TasksViewModel = viewModel(factory = factory)
                         TasksScreen(vm, onBack = { navController.popBackStack() })
                     }
                     composable(Routes.KEY_DATES) {
-                        val vm: com.soloadmin.hub.ui.screens.keydates.KeyDatesViewModel = viewModel(factory = factory)
+                        val vm: KeyDatesViewModel = viewModel(factory = factory)
                         KeyDatesScreen(vm, onBack = { navController.popBackStack() }, onSnackbar = showSnackbar)
                     }
                     composable(Routes.COLLEAGUES) {
-                        val vm: com.soloadmin.hub.ui.screens.colleagues.ColleaguesViewModel = viewModel(factory = factory)
+                        val vm: ColleaguesViewModel = viewModel(factory = factory)
                         ColleaguesScreen(vm, onBack = { navController.popBackStack() }, onSnackbar = showSnackbar)
                     }
                     composable(Routes.PROFILE) {
-                        val vm: com.soloadmin.hub.ui.screens.profile.ProfileViewModel = viewModel(factory = factory)
+                        val vm: ProfileViewModel = viewModel(factory = factory)
                         ProfileScreen(
                             vm,
                             onBack = { navController.popBackStack() },
@@ -192,7 +194,7 @@ fun SoloAdminApp(
                         )
                     }
                     composable(Routes.BACKUP) {
-                        val vm: com.soloadmin.hub.ui.screens.settings.SettingsViewModel = viewModel(factory = factory)
+                        val vm: SettingsViewModel = viewModel(factory = factory)
                         BackupScreen(
                             viewModel = vm,
                             onBack = { navController.popBackStack() },
