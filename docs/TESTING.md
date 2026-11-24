@@ -6,6 +6,9 @@ Two layers of tests ship with the project.
 
 Pure Kotlin, no Android framework, so they run in seconds on any machine or in CI.
 
+`app/src/test/resources/legacy_backup_sample.json` is the fixture `BackupCodecTest` decodes; it is
+a verbatim export of the legacy `localStorage` shape.
+
 | Test file | Covers |
 | --- | --- |
 | `MoneyTest` | Paise arithmetic, en-IN grouping, `₹` formatting, messy input parsing, rounding |
@@ -17,7 +20,8 @@ Pure Kotlin, no Android framework, so they run in seconds on any machine or in C
 | `ReportWriterTest` | Duty history CSV, reminder list CSV, attendance/expense/finance/key-date CSVs |
 | `DashboardStateTest` | Weekly-off detection, monthly net balance, key-date attention window (legacy parity) |
 
-**Current result: 82 tests, 0 failures.**
+**Current result: 82 tests, 0 failures** — confirmed by `./gradlew testDebugUnitTest` in GitHub
+Actions (job *Build & unit tests*, run on a clean Ubuntu runner with JDK 17 and SDK 35).
 
 Run them with:
 

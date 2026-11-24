@@ -106,6 +106,12 @@ app/src/main/java/com/soloadmin/hub/
   ui/{components,navigation,screens,theme}
 ```
 
+## Build status
+
+`main` and this branch build green in CI: `testDebugUnitTest` (82 tests) and `assembleDebug` both
+pass on a clean Ubuntu runner, and tag `v1.0.0` published a GitHub Release with
+`solo-admin-v1.0.0-debug.apk` (20.3 MB) and `solo-admin-v1.0.0-release-unsigned.apk` (13.7 MB).
+
 ## Still open
 
 * **First-run content.** The app currently seeds the demo records on first launch (matching the HTML
