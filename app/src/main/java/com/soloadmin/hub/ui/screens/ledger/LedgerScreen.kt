@@ -92,6 +92,12 @@ fun LedgerScreen(
         attendance.count { it.dateKey.startsWith(prefix) }
     }
 
+    // Built above SoloScreen: its content lambda is a LazyListScope, not a composable scope.
+    val colors = SoloTheme.colors
+    val timeline = remember(duties, attendance, expenses, colors) {
+        buildTimeline(duties, attendance, expenses, colors).take(30)
+    }
+
     SoloScreen(
         title = "Activity ledger",
         subtitle = "$totalRecords records logged"
@@ -192,11 +198,6 @@ fun LedgerScreen(
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(start = 4.dp, top = 6.dp)
             )
-        }
-
-        val colors = SoloTheme.colors
-        val timeline = remember(duties, attendance, expenses, colors) {
-            buildTimeline(duties, attendance, expenses, colors).take(30)
         }
 
         if (timeline.isEmpty()) {
