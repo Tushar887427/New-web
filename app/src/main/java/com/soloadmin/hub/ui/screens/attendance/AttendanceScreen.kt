@@ -51,6 +51,7 @@ import com.soloadmin.hub.ui.theme.SoloColors
 import com.soloadmin.hub.ui.theme.SoloTheme
 import java.time.LocalDate
 import java.time.YearMonth
+import kotlinx.coroutines.flow.collect
 
 /**
  * Monthly attendance calendar.

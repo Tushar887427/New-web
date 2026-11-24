@@ -85,7 +85,7 @@ class OfficialDutyViewModel(
         )
     }
 
-    fun resetForm() = form.value = DutyFormState()
+    fun resetForm() { form.value = DutyFormState() }
 
     fun attachPhoto(uri: android.net.Uri) = viewModelScope.launch {
         val name = mediaStore.importAttachment(uri)

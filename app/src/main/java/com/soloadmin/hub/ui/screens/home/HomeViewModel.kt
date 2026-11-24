@@ -90,7 +90,7 @@ class HomeViewModel(
 
     private val todayKey = MutableStateFlow(DateKeys.of(LocalDate.now()))
     private val events = kotlinx.coroutines.channels.Channel<HomeEvent>(capacity = kotlinx.coroutines.channels.Channel.BUFFERED)
-    val eventFlow = kotlinx.coroutines.flow.receiveAsFlow(events)
+    val eventFlow = events.receiveAsFlow()
 
     val uiState: StateFlow<HomeUiState> = todayKey.flatMapLatest { key ->
         val month = YearMonth.from(LocalDate.parse(key))

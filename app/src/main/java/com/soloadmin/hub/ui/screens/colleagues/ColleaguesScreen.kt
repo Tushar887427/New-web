@@ -65,6 +65,7 @@ import com.soloadmin.hub.ui.components.SoloScreen
 import com.soloadmin.hub.ui.components.SoloTextField
 import com.soloadmin.hub.ui.screens.home.SheetContent
 import com.soloadmin.hub.ui.theme.SoloTheme
+import kotlinx.coroutines.flow.collect
 
 /**
  * Colleagues directory: searchable cards with photo, role, theme tint and flexible info pairs

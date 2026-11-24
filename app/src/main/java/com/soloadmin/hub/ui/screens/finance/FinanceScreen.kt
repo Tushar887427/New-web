@@ -58,6 +58,7 @@ import com.soloadmin.hub.ui.components.SoloTextField
 import com.soloadmin.hub.ui.components.StatusPill
 import com.soloadmin.hub.ui.screens.home.SheetContent
 import com.soloadmin.hub.ui.theme.SoloTheme
+import kotlinx.coroutines.flow.collect
 
 @Composable
 fun FinanceScreen(

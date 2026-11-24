@@ -130,9 +130,11 @@ class AttendanceViewModel(
     /** Bulk leave entry for a date range (legacy "Log Leave" modal). */
     fun saveLeaveRange(leaveType: String, fromDate: String, toDate: String, note: String) =
         viewModelScope.launch {
-            val start = DateKeys.parseOrNull(fromDate)
-            val end = DateKeys.parseOrNull(toDate)
-            if (start == null || end == null) {
+            val start = DateKeys.parseOrNull(fromDate) ?: run {
+                events.send("Choose valid dates")
+                return@launch
+            }
+            val end = DateKeys.parseOrNull(toDate) ?: run {
                 events.send("Choose valid dates")
                 return@launch
             }

@@ -57,6 +57,7 @@ import com.soloadmin.hub.ui.components.ValueBar
 import com.soloadmin.hub.ui.screens.home.SheetContent
 import com.soloadmin.hub.ui.theme.SoloTheme
 import java.time.LocalDate
+import kotlinx.coroutines.flow.collect
 
 /**
  * Key dates: documents and licences with validity windows. Each card shows remaining days, a
@@ -164,16 +165,14 @@ private fun KeyDateCard(record: KeyDateRecord, today: LocalDate, onClick: () -> 
     val colors = SoloTheme.colors
     val expiry = record.expiryState(today)
     val tone = when (expiry) {
-        ExpiryState.EXPIRED -> colors.danger
-        ExpiryState.EXPIRING -> colors.warning
-        ExpiryState.VALID -> colors.positive
-        ExpiryState.NO_EXPIRY -> colors.textTertiary
+        is ExpiryState.Expired -> colors.danger
+        is ExpiryState.ExpiringSoon, ExpiryState.ExpiresToday -> colors.warning
+        is ExpiryState.Active -> colors.positive
     }
     val toneSoft = when (expiry) {
-        ExpiryState.EXPIRED -> colors.absentSoft
-        ExpiryState.EXPIRING -> colors.warningSoft
-        ExpiryState.VALID -> colors.positiveSoft
-        ExpiryState.NO_EXPIRY -> colors.subtleSurface
+        is ExpiryState.Expired -> colors.absentSoft
+        is ExpiryState.ExpiringSoon, ExpiryState.ExpiresToday -> colors.warningSoft
+        is ExpiryState.Active -> colors.positiveSoft
     }
     Column(
         modifier = Modifier
@@ -230,13 +229,13 @@ private fun KeyDateCard(record: KeyDateRecord, today: LocalDate, onClick: () -> 
             Spacer(Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = record.daysUntilExpiry(today)?.let { days ->
+                    text = record.daysUntilExpiry(today).let { days ->
                         when {
-                            days < 0 -> "Expired ${-days} day${if (days == -1L) "" else "s"} ago"
-                            days == 0L -> "Expires today"
-                            else -> "$days day${if (days == 1L) "" else "s"} remaining"
+                            days < 0 -> "Expired ${-days} day${if (days == -1) "" else "s"} ago"
+                            days == 0 -> "Expires today"
+                            else -> "$days day${if (days == 1) "" else "s"} remaining"
                         }
-                    } ?: "",
+                    },
                     style = MaterialTheme.typography.labelSmall,
                     color = tone,
                     modifier = Modifier.weight(1f)

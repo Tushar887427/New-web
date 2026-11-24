@@ -57,6 +57,7 @@ import com.soloadmin.hub.ui.components.SoloScreen
 import com.soloadmin.hub.ui.components.SoloTextField
 import com.soloadmin.hub.ui.components.TimeField
 import com.soloadmin.hub.ui.theme.SoloTheme
+import kotlinx.coroutines.flow.collect
 
 /**
  * Official duty log: the form (date, mode, times, office, location, remarks, attachment) sits

@@ -61,6 +61,7 @@ import com.soloadmin.hub.ui.components.SoloScreen
 import com.soloadmin.hub.ui.screens.home.SheetContent
 import com.soloadmin.hub.ui.theme.SoloTheme
 import java.time.YearMonth
+import kotlinx.coroutines.flow.collect
 
 /**
  * Admin settings: appearance, behaviour, reminders, exports, migration and the danger zone.

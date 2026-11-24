@@ -40,7 +40,6 @@ import com.soloadmin.hub.domain.model.AttendanceStatus
 import com.soloadmin.hub.domain.model.ExpenseOwner
 import com.soloadmin.hub.domain.model.ExpenseRecord
 import com.soloadmin.hub.domain.model.OfficialDutyRecord
-import com.soloadmin.hub.domain.model.OfficialDutyRecord
 import com.soloadmin.hub.ui.components.BalanceCard
 import com.soloadmin.hub.ui.components.EmptyState
 import com.soloadmin.hub.ui.components.GlassStat
@@ -52,6 +51,7 @@ import com.soloadmin.hub.ui.components.SoloCard
 import com.soloadmin.hub.ui.components.SoloScreen
 import com.soloadmin.hub.ui.components.StatusPill
 import com.soloadmin.hub.ui.navigation.Routes
+import com.soloadmin.hub.ui.theme.SoloColors
 import com.soloadmin.hub.ui.theme.SoloTheme
 import java.time.LocalDate
 
@@ -195,7 +195,7 @@ fun LedgerScreen(
         }
 
         val timeline = remember(duties, attendance, expenses, SoloTheme.colors) {
-            buildTimeline(duties, attendance, expenses).take(30)
+            buildTimeline(duties, attendance, expenses, SoloTheme.colors).take(30)
         }
 
         if (timeline.isEmpty()) {
@@ -235,13 +235,16 @@ private data class TimelineEntry(
     val badgeBackground: Color
 )
 
-@Composable
+/**
+ * Pure: colours are passed in, so this can run inside `remember` (the theme is stable for the
+ * lifetime of the composable).
+ */
 private fun buildTimeline(
     duties: List<OfficialDutyRecord>,
     attendance: List<AttendanceRecord>,
-    expenses: List<ExpenseRecord>
+    expenses: List<ExpenseRecord>,
+    colors: SoloColors
 ): List<TimelineEntry> {
-    val colors = SoloTheme.colors
     val entries = mutableListOf<TimelineEntry>()
     duties.take(15).forEach { duty ->
         entries += TimelineEntry(
@@ -269,7 +272,7 @@ private fun buildTimeline(
             title = expense.title,
             subtitle = "${expense.category} · ${if (expense.owner == ExpenseOwner.HEADMASTER) "Headmaster" else "Personal"}",
             badge = formatInr(expense.amount),
-            badgeColor = if (expense.owner == ExpenseOwner.HEADMASTER) colors.warning else MaterialTheme.colorScheme.onSurfaceVariant,
+            badgeColor = if (expense.owner == ExpenseOwner.HEADMASTER) colors.warning else colors.textTertiary,
             badgeBackground = if (expense.owner == ExpenseOwner.HEADMASTER) colors.warningSoft else colors.subtleSurface
         )
     }

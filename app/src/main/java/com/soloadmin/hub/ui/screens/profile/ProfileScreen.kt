@@ -54,6 +54,7 @@ import com.soloadmin.hub.ui.components.SoloScreen
 import com.soloadmin.hub.ui.components.SoloTextField
 import com.soloadmin.hub.ui.components.TimeField
 import com.soloadmin.hub.ui.theme.SoloTheme
+import kotlinx.coroutines.flow.collect
 
 /**
  * My profile: identity card, editable details, flexible info pairs and the working schedule
@@ -176,7 +177,7 @@ fun ProfileScreen(
                         onCancel = { editing = false }
                     )
                     ScheduleCard(
-                        weeklyOff = state.profile.weeklyOff,
+                        weeklyOff = state.profile.weeklyOffDay,
                         shiftStart = state.profile.shiftStart,
                         onSaveSchedule = { off, start ->
                             viewModel.saveSchedule(state.form.name.ifBlank { state.profile.name }, off, start)

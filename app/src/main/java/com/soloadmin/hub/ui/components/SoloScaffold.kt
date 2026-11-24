@@ -219,8 +219,8 @@ fun BodySection(title: String? = null, content: @Composable () -> Unit) {
 fun FilterChip(
     label: String,
     selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     val colors = SoloTheme.colors
     androidx.compose.foundation.layout.Box(

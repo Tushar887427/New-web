@@ -73,8 +73,11 @@ import com.soloadmin.hub.ui.components.ValueBar
 import com.soloadmin.hub.ui.navigation.Routes
 import com.soloadmin.hub.ui.screens.attendance.AttendanceViewModel
 import com.soloadmin.hub.ui.theme.SoloSpacing
+import com.soloadmin.hub.ui.screens.home.HomeEvent
+import com.soloadmin.hub.ui.theme.SoloColors
 import com.soloadmin.hub.ui.theme.SoloTheme
 import java.time.LocalDate
+import kotlinx.coroutines.flow.collect
 
 /**
  * Home dashboard.

@@ -31,6 +31,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate
 import java.time.YearMonth
+import kotlinx.coroutines.flow.collect
 
 /** In-progress import once the file has been parsed and previewed. */
 data class PendingImport(
@@ -76,7 +77,7 @@ class SettingsViewModel(
     private val pendingImport = MutableStateFlow<PendingImport?>(null)
     private val lastRestore = MutableStateFlow<RestoreSummary?>(null)
     private val events = Channel<SettingsEvent>(Channel.BUFFERED)
-    val eventFlow = kotlinx.coroutines.flow.receiveAsFlow(events)
+    val eventFlow = events.receiveAsFlow()
 
     val uiState: StateFlow<SettingsUiState> = combine(
         listOf(
