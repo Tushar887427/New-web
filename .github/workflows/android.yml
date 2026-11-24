@@ -37,8 +37,32 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      # GitHub's ubuntu runners already ship an Android SDK. This action only
+      # tops it up, so a hiccup here must never fail the build.
       - name: Set up Android SDK
+        continue-on-error: true
         uses: android-actions/setup-android@v3
+
+      - name: Resolve Android SDK location
+        run: |
+          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          if [ -z "$SDK" ] || [ ! -d "$SDK" ]; then SDK=/usr/local/lib/android/sdk; fi
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+          echo "Resolved SDK: $SDK"
+          ls "$SDK" || true
+          echo "SDKMANAGER=$(ls "$SDK"/cmdline-tools/*/bin/sdkmanager 2>/dev/null | head -1)" >> "$GITHUB_ENV"
+
+      - name: Install SDK platform 35 if missing
+        run: |
+          if [ -d "$ANDROID_HOME/platforms/android-35" ]; then
+            echo "android-35 already present"
+          elif [ -n "$SDKMANAGER" ] && [ -x "$SDKMANAGER" ]; then
+            yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+            "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0" "platform-tools" || true
+          else
+            echo "::warning::sdkmanager not found; relying on the preinstalled SDK"
+          fi
 
       - name: Cache Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -140,6 +164,7 @@ jobs:
           java-version: '17'
 
       - uses: android-actions/setup-android@v3
+        continue-on-error: true
 
       - uses: gradle/actions/setup-gradle@v4
 
@@ -177,6 +202,7 @@ jobs:
           java-version: '17'
 
       - uses: android-actions/setup-android@v3
+        continue-on-error: true
 
       - uses: gradle/actions/setup-gradle@v4
 
