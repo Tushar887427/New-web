@@ -73,7 +73,7 @@ data class FinanceEntity(
 
 @Entity(tableName = "key_dates", indices = [Index("validUntil")])
 data class KeyDateEntity(
-    @PrimaryKey(val id: String),
+    @PrimaryKey val id: String,
     val title: String,
     val category: String,
     val validFrom: String,
