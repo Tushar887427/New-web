@@ -2,6 +2,11 @@ package com.soloadmin.hub.data.backup
 
 import com.soloadmin.hub.domain.logic.BackupMapper
 import com.soloadmin.hub.domain.logic.DateKeys
+import com.soloadmin.hub.domain.logic.JsonNode
+import com.soloadmin.hub.domain.logic.asArrayOrNull
+import com.soloadmin.hub.domain.logic.asObjectOrNull
+import com.soloadmin.hub.domain.logic.jsonArray
+import com.soloadmin.hub.domain.logic.jsonObject
 import com.soloadmin.hub.domain.logic.formatInr
 import com.soloadmin.hub.domain.model.AttendanceRecord
 import com.soloadmin.hub.domain.model.AttendanceStatus
@@ -19,16 +24,6 @@ import com.soloadmin.hub.domain.model.ImportedProfile
 import com.soloadmin.hub.domain.model.ImportedTask
 import com.soloadmin.hub.domain.model.ImportedWorkSession
 import com.soloadmin.hub.domain.model.NumOrText
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonElement.JsonArray
-import kotlinx.serialization.json.JsonElement.JsonObject
-import kotlinx.serialization.json.JsonElement.JsonPrimitive
-import kotlinx.serialization.json.booleanOrNull
-import kotlinx.serialization.json.buildJsonArray
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.doubleOrNull
-import kotlinx.serialization.json.intOrNull
 import java.time.LocalDate
 
 /**
@@ -42,13 +37,13 @@ object BackupCodec {
     // ------------------------------------------------------------------ writing
 
     fun encode(snapshot: BackupSnapshot, exportedAt: LocalDate = LocalDate.now()): String {
-        val root = buildJsonObject {
+        val root = jsonObject {
             put("format", BackupPayload.FORMAT_NATIVE)
             put("version", BackupPayload.NATIVE_VERSION)
             put("exportedAt", exportedAt.toString())
             put("appVersion", "1.0.0")
 
-            put("profile", buildJsonObject {
+            put("profile", jsonObject {
                 put("name", snapshot.profile.name)
                 put("bio", snapshot.profile.bio)
                 put("photo", snapshot.profile.photoPath ?: "")
@@ -57,9 +52,9 @@ object BackupCodec {
                 put("info", infoArray(snapshot.profile.info.map { it.label to it.value }))
             })
 
-            put("attendance", buildJsonObject {
+            put("attendance", jsonObject {
                 snapshot.attendance.sortedBy { it.dateKey }.forEach { record ->
-                    put(record.dateKey, buildJsonObject {
+                    put(record.dateKey, jsonObject {
                         put("status", record.status.storageKey)
                         if (!record.leaveType.isNullOrBlank()) put("leaveType", record.leaveType)
                         put("inTime", record.inTime ?: "")
@@ -69,9 +64,9 @@ object BackupCodec {
                 }
             })
 
-            put("outOnWorkLogs", buildJsonArray {
+            put("outOnWorkLogs", jsonArray {
                 snapshot.duties.sortedByDescending { it.dateKey }.forEach { duty ->
-                    add(buildJsonObject {
+                    add(jsonObject {
                         put("id", duty.id)
                         put("date", duty.dateKey)
                         put("mode", duty.mode.label)
@@ -85,9 +80,9 @@ object BackupCodec {
                 }
             })
 
-            put("expenses", buildJsonArray {
+            put("expenses", jsonArray {
                 snapshot.expenses.sortedByDescending { it.dateKey }.forEach { expense ->
-                    add(buildJsonObject {
+                    add(jsonObject {
                         put("id", expense.id)
                         put("date", expense.dateKey)
                         put("title", expense.title)
@@ -100,9 +95,9 @@ object BackupCodec {
                 }
             })
 
-            put("finances", buildJsonArray {
+            put("finances", jsonArray {
                 snapshot.finances.sortedByDescending { it.dateKey }.forEach { finance ->
-                    add(buildJsonObject {
+                    add(jsonObject {
                         put("id", finance.id)
                         put("date", finance.dateKey)
                         put("title", finance.title)
@@ -113,9 +108,9 @@ object BackupCodec {
                 }
             })
 
-            put("reminders", buildJsonArray {
+            put("reminders", jsonArray {
                 snapshot.keyDates.sortedBy { it.validUntil }.forEach { keyDate ->
-                    add(buildJsonObject {
+                    add(jsonObject {
                         put("id", keyDate.id)
                         put("title", keyDate.title)
                         put("category", keyDate.category)
@@ -126,9 +121,9 @@ object BackupCodec {
                 }
             })
 
-            put("tasks", buildJsonArray {
+            put("tasks", jsonArray {
                 snapshot.tasks.sortedBy { it.sortOrder }.forEach { task ->
-                    add(buildJsonObject {
+                    add(jsonObject {
                         put("id", task.id)
                         put("text", task.text)
                         put("done", task.done)
@@ -136,9 +131,9 @@ object BackupCodec {
                 }
             })
 
-            put("colleagues", buildJsonArray {
+            put("colleagues", jsonArray {
                 snapshot.colleagues.sortedBy { it.sortOrder }.forEach { colleague ->
-                    add(buildJsonObject {
+                    add(jsonObject {
                         put("id", colleague.id)
                         put("name", colleague.name)
                         put("role", colleague.role)
@@ -150,14 +145,14 @@ object BackupCodec {
                 }
             })
 
-            put("workSessions", buildJsonArray {
+            put("workSessions", jsonArray {
                 snapshot.workSessions.sortedBy { it.dateKey }.forEach { session ->
-                    add(buildJsonObject {
+                    add(jsonObject {
                         put("dateKey", session.dateKey)
                         put("inTime", session.inTime ?: "")
                         put("outTime", session.outTime ?: "")
                         put("onBreak", session.onBreak)
-                        put("breakStartedAt", session.breakStartedAt)
+                        put("breakStartedAt", session.breakStartedAt ?: 0L)
                         put("breakMinutes", session.breakMinutes)
                         put("sessionsCount", session.sessionsCount)
                     })
@@ -191,9 +186,9 @@ object BackupCodec {
         return if (needsQuotes) "\"$escaped\"" else escaped
     }
 
-    private fun infoArray(items: List<Pair<String, String>>): JsonArray = buildJsonArray {
+    private fun infoArray(items: List<Pair<String, String>>): JsonNode.Arr = jsonArray {
         items.forEach { (label, value) ->
-            add(buildJsonObject {
+            add(jsonObject {
                 put("label", label)
                 put("value", value)
             })
@@ -212,7 +207,7 @@ object BackupCodec {
         } catch (error: Exception) {
             throw DecodeException("This file is not valid JSON. Choose the backup exported from the app.")
         }
-        val obj = root as? JsonObject ?: throw DecodeException("The backup file must contain a JSON object.")
+        val obj = root as? JsonNode.Obj ?: throw DecodeException("The backup file must contain a JSON object.")
         if (!looksLikeBackup(obj)) {
             throw DecodeException(
                 "This JSON does not look like a Solo Admin backup. Expected keys such as \"attendance\" or \"profile\"."
@@ -221,12 +216,12 @@ object BackupCodec {
         return fromObject(obj)
     }
 
-    private fun looksLikeBackup(obj: JsonObject): Boolean = listOf(
+    private fun looksLikeBackup(obj: JsonNode.Obj): Boolean = listOf(
         "attendance", "outOnWorkLogs", "expenses", "finances", "reminders", "tasks",
         "colleagues", "profile", "workSessions", "format"
     ).any { obj.containsKey(it) }
 
-    fun fromObject(obj: JsonObject): DecodedBackup {
+    fun fromObject(obj: JsonNode.Obj): DecodedBackup {
         val profile = obj["profile"].asObjectOrNull()?.let { p ->
             ImportedProfile(
                 name = p.string("name"),
@@ -238,7 +233,7 @@ object BackupCodec {
             )
         }
 
-        val attendance = obj["attendance"].asObjectOrNull()?.entries?.mapNotNull { (dateKey, element) ->
+        val attendance = obj["attendance"].asObjectOrNull()?.entriesList?.mapNotNull { (dateKey, element) ->
             val record = element.asObjectOrNull() ?: return@mapNotNull null
             ImportedAttendance(
                 dateKey = dateKey,
@@ -352,21 +347,18 @@ object BackupCodec {
 
     // ------------------------------------------------------------- JSON helpers
 
-    private fun JsonElement?.asObjectOrNull(): JsonObject? = this as? JsonObject
-    private fun JsonElement?.asArrayOrNull(): JsonArray? = this as? JsonArray
-
-    private fun JsonObject.string(key: String): String? {
+    private fun JsonNode.Obj.string(key: String): String? {
         val value = this[key] ?: return null
-        val primitive = value as? JsonPrimitive ?: return null
+        val primitive = value as? JsonNode.Prim ?: return null
         return primitive.contentOrNull?.takeIf { it.isNotEmpty() }
     }
 
-    private fun JsonObject.boolean(key: String): Boolean? =
-        (this[key] as? JsonPrimitive)?.booleanOrNull
+    private fun JsonNode.Obj.boolean(key: String): Boolean? =
+        (this[key] as? JsonNode.Prim)?.booleanOrNull
 
-    private fun JsonObject.number(key: String): NumOrText {
+    private fun JsonNode.Obj.number(key: String): NumOrText {
         val value = this[key] ?: return NumOrText.Absent
-        val primitive = value as? JsonPrimitive ?: return NumOrText.Absent
+        val primitive = value as? JsonNode.Prim ?: return NumOrText.Absent
         // A quoted number keeps its original string shape: the legacy app wrote some amounts as
         // text, and the mapper decides how to interpret them.
         if (primitive.isString) {
@@ -379,14 +371,14 @@ object BackupCodec {
         return if (content.isEmpty()) NumOrText.Absent else NumOrText.Text(content)
     }
 
-    private fun JsonObject.long(key: String): Long? {
-        val value = this[key] as? JsonPrimitive ?: return null
+    private fun JsonNode.Obj.long(key: String): Long? {
+        val value = this[key] as? JsonNode.Prim ?: return null
         value.doubleOrNull?.let { return it.toLong() }
         return value.contentOrNull?.toLongOrNull()
     }
 
-    private fun JsonElement.primitiveInt(): Int? {
-        val primitive = this as? JsonPrimitive ?: return null
+    private fun JsonNode.primitiveInt(): Int? {
+        val primitive = this as? JsonNode.Prim ?: return null
         primitive.intOrNull?.let { return it }
         return primitive.contentOrNull?.toIntOrNull()
     }
@@ -394,7 +386,7 @@ object BackupCodec {
     // ------------------------------------------------------- JSON reader/writer
 
     /** Minimal, dependency-sized JSON reader. Throws [DecodeException] on malformed input. */
-    fun readJson(text: String): JsonElement {
+    fun readJson(text: String): JsonNode {
         val parser = Reader(text)
         val value = parser.readValue()
         parser.skipWhitespace()
@@ -403,20 +395,20 @@ object BackupCodec {
     }
 
     /** Pretty writer producing stable, diff-friendly output. */
-    fun writeJson(element: JsonElement): String = buildString { Writer(this).write(element, 0) }
+    fun writeJson(element: JsonNode): String = buildString { Writer(this).write(element, 0) }
 
     private class Reader(private val text: String) {
         private var pos = 0
         fun atEnd(): Boolean = pos >= text.length
         fun skipWhitespace() { while (pos < text.length && text[pos].isWhitespace()) pos++ }
 
-        fun readValue(): JsonElement {
+        fun readValue(): JsonNode {
             skipWhitespace()
             if (atEnd()) throw DecodeException("The JSON file ends unexpectedly.")
             return when (val c = text[pos]) {
                 '{' -> readObject()
                 '[' -> readArray()
-                '"' -> JsonPrimitive(readString())
+                '"' -> JsonNode.Prim(readString())
                 't', 'f' -> readBoolean()
                 'n' -> readNull()
                 else -> {
@@ -426,11 +418,11 @@ object BackupCodec {
             }
         }
 
-        private fun readObject(): JsonObject {
+        private fun readObject(): JsonNode.Obj {
             expect('{')
-            val map = LinkedHashMap<String, JsonElement>()
+            val map = LinkedHashMap<String, JsonNode>()
             skipWhitespace()
-            if (peek() == '}') { pos++; return JsonObject(map) }
+            if (peek() == '}') { pos++; return JsonNode.Obj(map) }
             while (true) {
                 skipWhitespace()
                 val key = readString()
@@ -440,23 +432,23 @@ object BackupCodec {
                 skipWhitespace()
                 when (peek()) {
                     ',' -> { pos++; continue }
-                    '}' -> { pos++; return JsonObject(map) }
+                    '}' -> { pos++; return JsonNode.Obj(map) }
                     else -> throw DecodeException("Expected ',' or '}' in the JSON object.")
                 }
             }
         }
 
-        private fun readArray(): JsonArray {
+        private fun readArray(): JsonNode.Arr {
             expect('[')
-            val list = mutableListOf<JsonElement>()
+            val list = mutableListOf<JsonNode>()
             skipWhitespace()
-            if (peek() == ']') { pos++; return JsonArray(list) }
+            if (peek() == ']') { pos++; return JsonNode.Arr(list) }
             while (true) {
                 list.add(readValue())
                 skipWhitespace()
                 when (peek()) {
                     ',' -> { pos++; continue }
-                    ']' -> { pos++; return JsonArray(list) }
+                    ']' -> { pos++; return JsonNode.Arr(list) }
                     else -> throw DecodeException("Expected ',' or ']' in the JSON array.")
                 }
             }
@@ -495,27 +487,27 @@ object BackupCodec {
             }
         }
 
-        private fun readNumber(): JsonPrimitive {
+        private fun readNumber(): JsonNode.Prim {
             val start = pos
             if (peek() == '-') pos++
             while (!atEnd() && (text[pos].isDigit() || text[pos] == '.' || text[pos] == 'e' || text[pos] == 'E' || text[pos] == '+' || text[pos] == '-')) pos++
             val slice = text.substring(start, pos)
             slice.toDoubleOrNull() ?: throw DecodeException("Invalid number '$slice' in the JSON file.")
-            return JsonPrimitive(slice, isString = false)
+            return JsonNode.Prim(slice, isString = false)
         }
 
-        private fun readBoolean(): JsonPrimitive {
+        private fun readBoolean(): JsonNode.Prim {
             return when {
-                text.startsWith("true", pos) -> { pos += 4; JsonPrimitive("true", isString = false) }
-                text.startsWith("false", pos) -> { pos += 5; JsonPrimitive("false", isString = false) }
+                text.startsWith("true", pos) -> { pos += 4; JsonNode.Prim("true", isString = false) }
+                text.startsWith("false", pos) -> { pos += 5; JsonNode.Prim("false", isString = false) }
                 else -> throw DecodeException("Invalid literal in the JSON file.")
             }
         }
 
-        private fun readNull(): JsonPrimitive {
+        private fun readNull(): JsonNode.Prim {
             if (!text.startsWith("null", pos)) throw DecodeException("Invalid literal in the JSON file.")
             pos += 4
-            return JsonPrimitive("", isString = true)
+            return JsonNode.Prim("", isString = true)
         }
 
         private fun peek(): Char? = if (atEnd()) null else text[pos]
@@ -527,22 +519,22 @@ object BackupCodec {
     }
 
     private class Writer(private val out: StringBuilder) {
-        fun write(element: JsonElement, indent: Int) {
+        fun write(element: JsonNode, indent: Int) {
             when (element) {
-                is JsonObject -> writeObject(element, indent)
-                is JsonArray -> writeArray(element, indent)
-                is JsonPrimitive -> out.append(escape(element))
+                is JsonNode.Obj -> writeObject(element, indent)
+                is JsonNode.Arr -> writeArray(element, indent)
+                is JsonNode.Prim -> out.append(escape(element))
             }
         }
 
-        private fun writeObject(obj: JsonObject, indent: Int) {
-            if (obj.map.isEmpty()) { out.append("{}"); return }
+        private fun writeObject(obj: JsonNode.Obj, indent: Int) {
+            if (obj.fields.isEmpty()) { out.append("{}"); return }
             out.append("{\n")
-            val keys = obj.map.keys.toList()
+            val keys = obj.fields.keys.toList()
             keys.forEachIndexed { index, key ->
                 pad(indent + 1)
                 out.append(quote(key)).append(": ")
-                write(obj.map.getValue(key), indent + 1)
+                write(obj.fields.getValue(key), indent + 1)
                 if (index != keys.lastIndex) out.append(',')
                 out.append('\n')
             }
@@ -550,13 +542,13 @@ object BackupCodec {
             out.append('}')
         }
 
-        private fun writeArray(array: JsonArray, indent: Int) {
-            if (array.list.isEmpty()) { out.append("[]"); return }
+        private fun writeArray(array: JsonNode.Arr, indent: Int) {
+            if (array.items.isEmpty()) { out.append("[]"); return }
             out.append("[\n")
-            array.list.forEachIndexed { index, element ->
+            array.items.forEachIndexed { index, element ->
                 pad(indent + 1)
                 write(element, indent + 1)
-                if (index != array.list.lastIndex) out.append(',')
+                if (index != array.items.lastIndex) out.append(',')
                 out.append('\n')
             }
             pad(indent)
@@ -565,7 +557,7 @@ object BackupCodec {
 
         private fun pad(level: Int) { repeat(level) { out.append("  ") } }
 
-        private fun escape(primitive: JsonPrimitive): String {
+        private fun escape(primitive: JsonNode.Prim): String {
             if (!primitive.isString) {
                 val raw = primitive.raw
                 return if (raw.isEmpty()) "null" else raw
@@ -591,8 +583,8 @@ object BackupCodec {
         }
     }
 
-    private fun JsonObject.infoList(key: String): List<ImportedInfo> =
-        (this[key].asArrayOrNull()?.list ?: emptyList()).mapNotNull { element ->
+    private fun JsonNode.Obj.infoList(key: String): List<ImportedInfo> =
+        (this[key].asArrayOrNull()?.items ?: emptyList()).mapNotNull { element ->
             val o = element.asObjectOrNull() ?: return@mapNotNull null
             ImportedInfo(o.string("label"), o.string("value"))
         }
