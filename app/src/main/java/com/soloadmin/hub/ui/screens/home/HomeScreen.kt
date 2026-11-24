@@ -74,6 +74,7 @@ import com.soloadmin.hub.ui.navigation.Routes
 import com.soloadmin.hub.ui.screens.attendance.AttendanceViewModel
 import com.soloadmin.hub.ui.theme.SoloSpacing
 import com.soloadmin.hub.ui.theme.SoloTheme
+import java.time.LocalDate
 
 /**
  * Home dashboard.
@@ -734,7 +735,7 @@ private fun HeadmasterStrip(due: Money, onClick: () -> Unit) {
 }
 
 @Composable
-private fun KeyDateAlertCard(items: List<KeyDateRecord>, today: java.time.LocalDate, onOpen: () -> Unit) {
+private fun KeyDateAlertCard(items: List<KeyDateRecord>, today: LocalDate, onOpen: () -> Unit) {
     val colors = SoloTheme.colors
     val soonest = items.minByOrNull { it.validUntil } ?: return
     val state = soonest.expiryState(today)
@@ -773,7 +774,7 @@ private fun KeyDateAlertCard(items: List<KeyDateRecord>, today: java.time.LocalD
         }
         Spacer(Modifier.height(10.dp))
         ValueBar(
-            fraction = soonest.validityProgress(today) / 100f,
+            fraction = soonest.validityFraction(today),
             color = accent,
             height = 5.dp
         )
