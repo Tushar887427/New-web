@@ -107,15 +107,18 @@ jobs:
             echo '```'
           } > report.md
           if [ ! -s report.md ]; then echo "nothing extracted"; exit 0; fi
-          TITLE="CI build failures"
-          NUM=$(gh issue list --state open --search "$TITLE in:title" --json number,title \
-                 --jq "[.[] | select(.title==\"$TITLE\")][0].number // empty" 2>/dev/null)
+          # Repository issue list is used instead of `gh issue list --search`,
+          # which depends on the (retired) projects-classic GraphQL field.
+          NUM=$(gh api "repos/${{ github.repository }}/issues?state=open&per_page=100" \
+                 --jq '[.[] | select(.title=="CI build failures")][0].number // empty')
           if [ -z "$NUM" ]; then
-            gh issue create --title "$TITLE" --body "Automated Android CI reports. Latest first." >/dev/null
-            NUM=$(gh issue list --state open --search "$TITLE in:title" --json number,title \
-                   --jq "[.[] | select(.title==\"$TITLE\")][0].number")
+            NUM=$(gh api -X POST "repos/${{ github.repository }}/issues" \
+                   -f title="CI build failures" \
+                   -f body="Automated Android CI reports, newest first." \
+                   --jq '.number')
           fi
-          gh issue comment "$NUM" --body-file report.md
+          gh api -X POST "repos/${{ github.repository }}/issues/$NUM/comments" \
+            -f body="$(cat report.md)" --jq '.html_url'
 
       - name: Collect APKs
         if: always()
