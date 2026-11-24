@@ -194,8 +194,9 @@ fun LedgerScreen(
             )
         }
 
-        val timeline = remember(duties, attendance, expenses, SoloTheme.colors) {
-            buildTimeline(duties, attendance, expenses, SoloTheme.colors).take(30)
+        val colors = SoloTheme.colors
+        val timeline = remember(duties, attendance, expenses, colors) {
+            buildTimeline(duties, attendance, expenses, colors).take(30)
         }
 
         if (timeline.isEmpty()) {

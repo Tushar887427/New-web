@@ -67,6 +67,8 @@ fun BackupScreen(
             when (event) {
                 is SettingsEvent.Message -> onSnackbar(event.text)
                 is SettingsEvent.ImportFailed -> onSnackbar(event.message)
+                // Only the Settings screen owns the permission prompt; Backup just acknowledges.
+                is SettingsEvent.RequestNotificationsPermission -> Unit
                 is SettingsEvent.Share -> {
                     val share = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
                         type = event.mime
