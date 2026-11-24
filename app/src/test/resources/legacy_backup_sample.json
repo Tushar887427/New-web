@@ -1,0 +1,94 @@
+{
+  "profile": {
+    "name": "Admin",
+    "bio": "Government Office Staff managing daily attendance, official bills & records.",
+    "photo": "",
+    "weeklyOff": 0,
+    "shiftStart": "09:30",
+    "info": [
+      { "label": "ID", "value": "GOV-1042" },
+      { "label": "Office", "value": "Main Block" },
+      { "label": "Time", "value": "09:30 AM" },
+      { "label": "Mobile", "value": "+91 98000 00000" }
+    ]
+  },
+  "session": {
+    "date": "2026-11-23",
+    "punchedIn": false,
+    "inTime": "",
+    "outTime": "",
+    "onBreak": false,
+    "breakStartMs": null,
+    "totalBreakMins": 0
+  },
+  "calendarView": { "year": 2026, "month": 10 },
+  "attendance": {
+    "2026-11-02": { "status": "Present", "inTime": "09:20", "outTime": "17:05", "note": "" },
+    "2026-11-03": { "status": "Late", "inTime": "09:55", "outTime": "17:10", "note": "Traffic delay" },
+    "2026-11-04": { "status": "Leave", "leaveType": "Casual Leave", "inTime": "", "outTime": "", "note": "Family errand" },
+    "2026-11-05": { "status": "Present", "inTime": "09:15", "outTime": "17:00", "note": "" },
+    "2026-11-06": { "status": "Outstation", "inTime": "10:00", "outTime": "16:30", "note": "DEO Office Visit" },
+    "2026-11-09": { "status": "Present", "inTime": "09:22", "outTime": "17:02", "note": "" },
+    "2026-11-10": { "status": "Early_Going", "inTime": "09:18", "outTime": "15:30", "note": "Bank work" },
+    "2026-11-11": { "status": "Leave", "leaveType": "Earned Leave", "inTime": "", "outTime": "", "note": "Planned leave" }
+  },
+  "outOnWorkLogs": [
+    {
+      "id": "oow-1",
+      "date": "2026-11-06",
+      "mode": "Full Day",
+      "startTime": "10:00",
+      "endTime": "16:30",
+      "meetingWith": "District Education Office (DEO)",
+      "location": "Collectorate Complex",
+      "remarks": "Submitted quarterly grant utilization report.",
+      "attachment": ""
+    }
+  ],
+  "expenses": [
+    { "id": "exp-1", "date": "2026-11-06", "title": "Office Stationery & Registers", "category": "Office", "amount": 1450, "owner": "headmaster", "recovered": false, "note": "Voucher #112" },
+    { "id": "exp-2", "date": "2026-11-09", "title": "Official Travel Auto Fare", "category": "Travel", "amount": 320, "owner": "headmaster", "recovered": true, "note": "Treasury visit" },
+    { "id": "exp-3", "date": "2026-11-23", "title": "Lunch & Tea", "category": "Food", "amount": 180, "owner": "personal", "recovered": false, "note": "" }
+  ],
+  "finances": [
+    { "id": "fin-1", "date": "2026-11-01", "title": "Monthly Salary", "type": "income", "amount": 45000, "status": "received" },
+    { "id": "fin-2", "date": "2026-11-23", "title": "TA / DA & Duty Allowance", "type": "advance", "amount": 5000, "status": "pending" }
+  ],
+  "reminders": [
+    { "id": "rem-1", "title": "Institution Registration Certificate", "category": "Document", "validFrom": "2026-01-01", "validUntil": "2027-02-03", "note": "Renew 30 days before expiry with updated audit report." },
+    { "id": "rem-2", "title": "Fire Safety NOC", "category": "Compliance", "validFrom": "2025-12-05", "validUntil": "2026-12-05", "note": "Schedule inspection with local fire department." },
+    { "id": "rem-3", "title": "Broadband & Domain Contract", "category": "Contract", "validFrom": "2025-11-10", "validUntil": "2026-11-10", "note": "Invoice pending renewal." }
+  ],
+  "tasks": [
+    { "id": "tsk-1", "text": "Verify monthly attendance register", "done": true },
+    { "id": "tsk-2", "text": "Submit Headmaster expense vouchers for reimbursement", "done": false }
+  ],
+  "colleagues": [
+    {
+      "id": "col-1",
+      "name": "Rajesh Sharma",
+      "role": "Headmaster — Oversees school & office administration.",
+      "theme": "sky",
+      "photo": "",
+      "bgPhoto": "",
+      "info": [
+        { "label": "ID", "value": "HM-001" },
+        { "label": "Room", "value": "101" },
+        { "label": "Mobile", "value": "+91 98765 43210" }
+      ]
+    },
+    {
+      "id": "col-2",
+      "name": "Ananya Das",
+      "role": "Senior Clerk — Accounts, vouchers & official records.",
+      "theme": "mint",
+      "photo": "",
+      "bgPhoto": "",
+      "info": [
+        { "label": "Desk", "value": "B-04" },
+        { "label": "Mobile", "value": "+91 91234 56789" },
+        { "label": "Note", "value": "Handles monthly reimbursement vouchers every Friday." }
+      ]
+    }
+  ]
+}

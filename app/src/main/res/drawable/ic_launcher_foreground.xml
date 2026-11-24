@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Monogram "S" formed from an abstract attendance clock + ledger bar. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Clock ring -->
+    <path
+        android:pathData="M54,32 A22,22 0 1,0 54,76 A22,22 0 1,0 54,32 Z M54,39 A15,15 0 1,1 54,69 A15,15 0 1,1 54,39 Z"
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.28" />
+
+    <!-- Handle (punch clock lever) -->
+    <path
+        android:pathData="M31,39 L39,31 L44,36 L36,44 Z"
+        android:fillColor="#FFD7A8" />
+
+    <!-- Ledger bar base -->
+    <path
+        android:pathData="M38,84 L70,84 A3,3 0 0,0 73,81 L73,80 A3,3 0 0,0 70,77 L38,77 A3,3 0 0,0 35,80 L35,81 A3,3 0 0,0 38,84 Z"
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.55" />
+
+    <!-- Clock hands: 3 o'clock -->
+    <path
+        android:pathData="M52.5,47 L55.5,47 L55.5,55 L63,55 L63,58 L52.5,58 Z"
+        android:fillColor="#FFFFFF" />
+</vector>

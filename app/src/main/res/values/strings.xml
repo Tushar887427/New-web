@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Solo Admin</string>
+    <string name="app_tagline">Gov Office Hub</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_ledger">Ledger</string>
+    <string name="nav_expenses">Expenses</string>
+    <string name="nav_finance">Finance</string>
+    <string name="nav_settings">Settings</string>
+
+    <string name="channel_reminders_name">Key date reminders</string>
+    <string name="channel_reminders_desc">Local notifications for documents nearing expiry.</string>
+    <string name="channel_daily_name">Daily task nudge</string>
+    <string name="channel_daily_desc">A quiet reminder for tasks still pending today.</string>
+
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_add">Add</string>
+    <string name="action_close">Close</string>
+    <string name="action_clear">Clear</string>
+    <string name="action_export">Export</string>
+    <string name="action_import">Import</string>
+    <string name="action_share">Share</string>
+</resources>
